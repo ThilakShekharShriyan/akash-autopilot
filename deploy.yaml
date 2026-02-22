@@ -1,0 +1,81 @@
+---
+version: "2.0"
+
+services:
+  autopilot:
+    # Replace with your Docker Hub username and image
+    image: YOUR_DOCKERHUB_USERNAME/akash-autopilot:latest
+    
+    env:
+      # Akash Console API credentials
+      - CONSOLE_API_KEY=your_console_api_key_here
+      - CONSOLE_API_BASE_URL=https://console-api.akash.network
+      
+      # AkashML credentials
+      - AKASHML_API_KEY=your_akashml_api_key_here
+      - AKASHML_BASE_URL=https://api.akashml.com/v1
+      - AKASHML_MODEL=llama-3-3-70b
+      
+      # Agent configuration
+      - LOOP_INTERVAL=120
+      - DB_PATH=/data/autopilot.db
+      
+      # Policy guardrails
+      - MAX_ACTIONS_PER_HOUR=10
+      - MAX_ACTIONS_PER_DAY=50
+      - SCALE_COOLDOWN_SECONDS=3600
+      - REDEPLOY_COOLDOWN_SECONDS=7200
+      
+      # Logging
+      - LOG_LEVEL=INFO
+    
+    expose:
+      - port: 8000
+        as: 80
+        to:
+          - global: true
+        http_options:
+          max_body_size: 1048576
+    
+    # Persistent storage configuration
+    params:
+      storage:
+        data:
+          mount: /data
+          readOnly: false
+
+profiles:
+  compute:
+    autopilot:
+      resources:
+        cpu:
+          units: 0.5
+        memory:
+          size: 512Mi
+        storage:
+          # Ephemeral storage for OS and logs
+          - size: 256Mi
+          # Persistent storage for database
+          - name: data
+            size: 1Gi
+            attributes:
+              persistent: true
+              class: beta3
+  
+  placement:
+    dcloud:
+      attributes:
+        host: akash
+      signedBy:
+        anyOf:
+          - akash1365yvmc4s7awdyj3n2sav7xfx76adc6dnmlx63
+      pricing:
+        autopilot:
+          denom: uakt
+          amount: 10000
+
+deployment:
+  autopilot:
+    dcloud:
+      profile: autopilot
+      count: 1

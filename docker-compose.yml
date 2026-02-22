@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  autopilot:
+    build: .
+    image: akash-autopilot:latest
+    container_name: autopilot
+    ports:
+      - "8000:8000"
+    environment:
+      - CONSOLE_API_KEY=${CONSOLE_API_KEY:-your_console_api_key_here}
+      - CONSOLE_API_BASE_URL=${CONSOLE_API_BASE_URL:-https://console-api.akash.network}
+      - AKASHML_API_KEY=${AKASHML_API_KEY:-your_akashml_api_key_here}
+      - AKASHML_BASE_URL=${AKASHML_BASE_URL:-https://api.akashml.com/v1}
+      - AKASHML_MODEL=${AKASHML_MODEL:-llama-3-3-70b}
+      - LOOP_INTERVAL=${LOOP_INTERVAL:-120}
+      - DB_PATH=/data/autopilot.db
+      - MAX_ACTIONS_PER_HOUR=${MAX_ACTIONS_PER_HOUR:-10}
+      - MAX_ACTIONS_PER_DAY=${MAX_ACTIONS_PER_DAY:-50}
+      - SCALE_COOLDOWN_SECONDS=${SCALE_COOLDOWN_SECONDS:-3600}
+      - REDEPLOY_COOLDOWN_SECONDS=${REDEPLOY_COOLDOWN_SECONDS:-7200}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+    volumes:
+      - ./data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+
+volumes:
+  data:
+    driver: local
