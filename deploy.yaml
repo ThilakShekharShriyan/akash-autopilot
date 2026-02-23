@@ -3,7 +3,7 @@ version: "2.0"
 
 services:
   autopilot:
-    image: thilakshriyan/akash-autopilot:latest@sha256:c3eb644fcef6c9eee6a3d2e9d3f710dd19eb88218b01243666389051732e7933
+    image: thilakshriyan/akash-autopilot:latest@sha256:c9f0db198ff30204d36af1730bc6aba17f38ef618720d5cc09326547f3fe85cf
     
     env:
       # Akash Console API credentials
