@@ -128,7 +128,13 @@ Current policy constraints:
         prompt_parts.append("=== CURRENT DEPLOYMENTS ===")
         if deployments:
             for dep in deployments:
-                metrics = json.loads(dep.get("metrics", "{}")) if dep.get("metrics") else {}
+                metrics_data = dep.get("metrics", {})
+                # Handle both dict and JSON string formats
+                if isinstance(metrics_data, str):
+                    metrics = json.loads(metrics_data) if metrics_data else {}
+                else:
+                    metrics = metrics_data or {}
+                    
                 prompt_parts.append(f"""
 Deployment: {dep.get('name', 'unknown')}
 ID: {dep.get('deployment_id')}
