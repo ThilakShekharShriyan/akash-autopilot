@@ -51,3 +51,4 @@ Thumbs.db
 *.pem
 *.key
 mnemonic.txt
+deploy.local.yaml
