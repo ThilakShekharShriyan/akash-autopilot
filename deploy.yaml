@@ -29,7 +29,7 @@ services:
       - REDELEGATE_COOLDOWN_SECONDS=604800
       
       # Wallet / Treasury (leave empty for mock mode)
-      - WALLET_MNEMONIC=
+      - WALLET_MNEMONIC=""
       - CHAIN_ID=testnet-8
       - RPC_ENDPOINT=https://testnetrpc.akashnet.net:443
       - MIN_BALANCE_UAKT=5000000
