@@ -4,9 +4,11 @@ import asyncio
 import logging
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, FileResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from typing import Optional
+from pathlib import Path
 from src.agent.loop import AutopilotAgent
 from src.config import settings
 
@@ -89,9 +91,30 @@ class StatusResponse(BaseModel):
 
 # ===== ENDPOINTS =====
 
-@app.get("/", response_class=JSONResponse)
+@app.get("/")
 async def root():
-    """Root endpoint"""
+    """Serve the frontend dashboard"""
+    frontend_path = Path(__file__).parent.parent.parent / "frontend" / "index.html"
+    if frontend_path.exists():
+        return FileResponse(frontend_path)
+    # Fallback to API info if frontend not found
+    return {
+        "name": "Akash Autopilot",
+        "version": "0.1.0",
+        "description": "Autonomous Infrastructure Operator",
+        "endpoints": {
+            "health": "/health",
+            "status": "/status",
+            "actions": "/actions",
+            "deployments": "/deployments",
+            "policy": "/policy",
+            "stats": "/stats"
+        }
+    }
+
+@app.get("/api")
+async def api_info():
+    """API information endpoint"""
     return {
         "name": "Akash Autopilot",
         "version": "0.1.0",
