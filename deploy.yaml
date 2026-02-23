@@ -3,15 +3,15 @@ version: "2.0"
 
 services:
   autopilot:
-    image: thilakshriyan/akash-autopilot:latest
+    image: thilakshriyan/akash-autopilot:latest@sha256:1b7c60a2cb59a07d04f3f26de901bdca5457a6c73043d98ec417d7db5bedab66
     
     env:
       # Akash Console API credentials
-      - CONSOLE_API_KEY=your_console_api_key_here
+      - CONSOLE_API_KEY=ac.sk.production.211dad6023cd3bb9ce752b4602893bfb01fda4d7d8335ed925ff924bbdd17c17
       - CONSOLE_API_BASE_URL=https://console-api.akash.network
       
       # AkashML credentials
-      - AKASHML_API_KEY=your_akashml_api_key_here
+      - AKASHML_API_KEY=akml-yluUEjWbDvSVerKCXZkBYhzUPlKfzDZN
       - AKASHML_BASE_URL=https://api.akashml.com/v1
       - AKASHML_MODEL=meta-llama/Llama-3.3-70B-Instruct
       
@@ -42,8 +42,6 @@ services:
         as: 80
         to:
           - global: true
-        http_options:
-          max_body_size: 1048576
     
     # Persistent storage configuration
     params:
