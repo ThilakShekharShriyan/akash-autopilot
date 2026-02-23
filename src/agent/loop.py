@@ -278,7 +278,22 @@ class AutopilotAgent:
         logger.info(f"Scaling deployment {deployment_id} to {new_count} replicas")
         logger.info(f"Reason: {reason}")
         
-        # Get current deployment
+        # DEMO MODE: Simulate successful scaling
+        if settings.demo_mode:
+            logger.info(f"🎭 DEMO MODE: Simulated scaling {deployment_id} to {new_count} replicas")
+            # Update the deployment state in database to reflect the new replica count
+            dep_state = await self.db.get_deployment_state(deployment_id)
+            if dep_state:
+                await self.db.update_deployment_state(
+                    deployment_id=deployment_id,
+                    name=dep_state.get("name", "unknown"),
+                    status="active",
+                    replicas=new_count,
+                    metrics=dep_state.get("metrics")
+                )
+            return True
+        
+        # PRODUCTION MODE: Get current deployment
         deployment = self.console_client.get_deployment(deployment_id)
         if not deployment:
             logger.error(f"Deployment {deployment_id} not found")
@@ -298,7 +313,22 @@ class AutopilotAgent:
         logger.info(f"Redeploying deployment {deployment_id}")
         logger.info(f"Reason: {reason}")
         
-        # Get current deployment
+        # DEMO MODE: Simulate successful redeployment
+        if settings.demo_mode:
+            logger.info(f"🎭 DEMO MODE: Simulated redeployment of {deployment_id}")
+            # Update deployment status to show it was redeployed
+            dep_state = await self.db.get_deployment_state(deployment_id)
+            if dep_state:
+                await self.db.update_deployment_state(
+                    deployment_id=deployment_id,
+                    name=dep_state.get("name", "unknown"),
+                    status="active",
+                    replicas=dep_state.get("replicas", 1),
+                    metrics=dep_state.get("metrics")
+                )
+            return True
+        
+        # PRODUCTION MODE: Get current deployment
         deployment = self.console_client.get_deployment(deployment_id)
         if not deployment:
             logger.error(f"Deployment {deployment_id} not found")
