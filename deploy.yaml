@@ -3,8 +3,7 @@ version: "2.0"
 
 services:
   autopilot:
-    # Replace with your Docker Hub username and image
-    image: YOUR_DOCKERHUB_USERNAME/akash-autopilot:latest
+    image: thilakshriyan/akash-autopilot:latest
     
     env:
       # Akash Console API credentials
@@ -14,7 +13,7 @@ services:
       # AkashML credentials
       - AKASHML_API_KEY=your_akashml_api_key_here
       - AKASHML_BASE_URL=https://api.akashml.com/v1
-      - AKASHML_MODEL=llama-3-3-70b
+      - AKASHML_MODEL=meta-llama/Llama-3.3-70B-Instruct
       
       # Agent configuration
       - LOOP_INTERVAL=120
@@ -25,6 +24,15 @@ services:
       - MAX_ACTIONS_PER_DAY=50
       - SCALE_COOLDOWN_SECONDS=3600
       - REDEPLOY_COOLDOWN_SECONDS=7200
+      - CLAIM_REWARDS_COOLDOWN_SECONDS=86400
+      - REDELEGATE_COOLDOWN_SECONDS=604800
+      
+      # Wallet / Treasury (leave empty for mock mode)
+      - WALLET_MNEMONIC=
+      - CHAIN_ID=testnet-8
+      - RPC_ENDPOINT=https://testnetrpc.akashnet.net:443
+      - MIN_BALANCE_UAKT=5000000
+      - REWARD_CLAIM_THRESHOLD_UAKT=1000000
       
       # Logging
       - LOG_LEVEL=INFO
