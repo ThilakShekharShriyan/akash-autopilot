@@ -19,14 +19,11 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY src/ ./src/
 COPY .env.example .env
 
-# Create data directory for persistent storage
-RUN mkdir -p /data && \
-    chmod 777 /data
-
-# Create non-root user for security
+# Create non-root user for security first
 RUN useradd -m -u 1000 autopilot && \
-    chown -R autopilot:autopilot /app /data
+    chown -R autopilot:autopilot /app
 
+# Switch to non-root user
 USER autopilot
 
 # Expose API port
