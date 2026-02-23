@@ -9,6 +9,7 @@ from src.database.db import AutopilotDB
 from src.agent.policy import PolicyGuardrails, ActionValidator
 from src.agent.llm import AkashMLClient
 from src.agent.console_api import get_console_client
+from src.agent.demo import DemoDeploymentGenerator
 
 logger = logging.getLogger(__name__)
 
@@ -21,6 +22,7 @@ class AutopilotAgent:
         self.policy: Optional[PolicyGuardrails] = None
         self.llm_client: Optional[AkashMLClient] = None
         self.console_client = get_console_client(use_mock=use_mock_apis)
+        self.demo_generator = DemoDeploymentGenerator() if settings.demo_mode else None
         self.running = False
         self.last_loop_time: Optional[datetime] = None
         self.loop_count = 0
@@ -132,7 +134,28 @@ class AutopilotAgent:
         """Fetch current deployment states"""
         deployments_data = []
         
-        # Get deployments from Console API
+        # DEMO MODE: Generate simulated deployments with various scenarios
+        if settings.demo_mode and self.demo_generator:
+            logger.info("🎭 DEMO MODE: Generating simulated deployments...")
+            demo_deployments = self.demo_generator.generate_multiple_deployments(count=3)
+            
+            for dep in demo_deployments:
+                deployment_id = dep["dseq"]
+                logger.info(f"Demo Deployment: {dep['name']} (Scenario: {dep['scenario']}) - Expected Action: {dep['expected_action']}")
+                
+                # Store in database
+                await self.db.upsert_deployment(
+                    deployment_id=deployment_id,
+                    name=dep["name"],
+                    status=dep["status"],
+                    replicas=dep["replicas"],
+                    owner=dep["owner"]
+                )
+                deployments_data.append(dep)
+            
+            return deployments_data
+        
+        # NORMAL MODE: Get deployments from Console API
         api_deployments = self.console_client.list_deployments()
         
         if not api_deployments:

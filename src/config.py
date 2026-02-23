@@ -25,6 +25,7 @@ class Settings(BaseSettings):
     # Agent Configuration
     loop_interval: int = 120
     db_path: str = "/data/autopilot.db"
+    demo_mode: bool = False  # Enable to see AI making decisions on simulated deployments
     
     # Policy Guardrails
     max_actions_per_hour: int = 10
