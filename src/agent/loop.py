@@ -144,12 +144,12 @@ class AutopilotAgent:
                 logger.info(f"Demo Deployment: {dep['name']} (Scenario: {dep['scenario']}) - Expected Action: {dep['expected_action']}")
                 
                 # Store in database
-                await self.db.upsert_deployment(
+                await self.db.update_deployment_state(
                     deployment_id=deployment_id,
                     name=dep["name"],
                     status=dep["status"],
                     replicas=dep["replicas"],
-                    owner=dep["owner"]
+                    metrics=dep.get("metrics", {})
                 )
                 deployments_data.append(dep)
             
